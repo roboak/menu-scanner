@@ -30,9 +30,9 @@ dependencies:
   flutter:
     sdk: flutter
   font_awesome_flutter: ^9.0.0
-  splash_screen_view: ^3.0.0
-  google_ml_kit: ^0.6.0
-  image_picker: ^0.8.1+1
+  # splash_screen_view: ^3.0.0
+  # google_ml_kit: ^0.6.0
+  # image_picker: ^0.8.1+1
   flutter_mobile_vision: ^0.1.4+1
   ml_kit_ocr: ^0.0.3+1
   camera:

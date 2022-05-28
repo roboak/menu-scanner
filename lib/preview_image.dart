@@ -1,10 +1,7 @@
-// import 'dart:html';
-// import 'dart:async';
 import 'dart:io';
-
-// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'display_ocr_results.dart';
+import 'display_processed_image.dart';
 
 // A widget that displays the picture taken by the user.
 class DisplayPictureScreen extends StatelessWidget {
@@ -17,7 +14,7 @@ class DisplayPictureScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: const Text('Preview Image')),
         // The image is stored as a file on the device. Use the `Image.file`
-        // constructor with the given path to display the image.
+        // constructor with the given path to display   the image.
         body: Image.file(File(imagePath)),
         floatingActionButton: ElevatedButton(
           onPressed: () async {
@@ -25,9 +22,7 @@ class DisplayPictureScreen extends StatelessWidget {
             try {
               await Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => DisplayOcrResults(
-                    // Pass the automatically generated path to
-                    // the DisplayPictureScreen widget.
+                  builder: (context) => DisplayProcessedImage(
                     imagePath: imagePath,
                   ),
                 ),
