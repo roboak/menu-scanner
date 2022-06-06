@@ -1,30 +1,115 @@
-// import 'dart:io';
-import 'dart:async';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-
-// import 'package:image_picker/image_picker.dart';
-
-// import 'package:ml_kit_ocr/ml_kit_ocr.dart';
 import 'take_picture.dart';
 
-Future<void> main() async {
-  // Ensure that plugin services are initialized so that `availableCameras()`
-  // can be called before `runApp()`
-  WidgetsFlutterBinding.ensureInitialized();
-  // Obtain a list of the available cameras on the device.
-  final cameras = await availableCameras();
+void main() => runApp(MyApp());
 
-  // Get a specific camera from the list of available cameras.
-  final firstCamera = cameras.first;
-
-  runApp(
-    MaterialApp(
-      theme: ThemeData.dark(),
-      home: TakePictureScreen(
-        // Pass the appropriate camera to the TakePictureScreen widget.
-        camera: firstCamera,
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'ListViews',
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
       ),
-    ),
+      home: Scaffold(
+        appBar: AppBar(title: Text('Filter')),
+        body: BodyLayout(),
+      ),
+    );
+  }
+}
+
+class BodyLayout extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _myListView(context);
+  }
+}
+
+Widget _myListView(BuildContext context) {
+  return ListView(
+    children: ListTile.divideTiles(
+      context: context,
+      tiles: [
+        ListTile(
+          leading: CircleAvatar(
+            backgroundImage: AssetImage('assets/vegan.jpg'),
+          ),
+          title: Text('Vegan'),
+          onTap: () {
+            const snackBar = SnackBar(content: Text('Only vegan options will be shown'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+            print('Vegan'); // TODO save it somehow and show this in the app with a checkmark for example
+          },
+        ),
+        ListTile(
+          leading: CircleAvatar(
+            backgroundImage: AssetImage('assets/vegetarian.png'),
+          ),
+          title: Text('Vegetarian'),
+          onTap: () {
+            const snackBar = SnackBar(content: Text('Only vegetarian options will be shown'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+            print('Vegetarian'); // TODO save it somehow and show this in the app with a checkmark for example
+          },
+        ),
+        ListTile(
+          leading: CircleAvatar(
+            backgroundImage: AssetImage('assets/tomato.png'),
+          ),
+          title: Text('Tomatos'),
+          onTap: () {
+            const snackBar = SnackBar(content: Text('I don\'t like Tomatos'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+            print('Tomatos'); // TODO save it somehow and show this in the app with a checkmark for example
+          },
+        ),
+        ListTile(
+          leading: CircleAvatar(
+            backgroundImage: AssetImage('assets/onion.png'),
+          ),
+          title: Text('Onions'),
+          onTap: () {
+            const snackBar = SnackBar(content: Text('I don\'t like Onions'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+            print('Onions'); // TODO save it somehow and show this in the app with a checkmark for example
+          },
+        ),
+        ListTile(
+          leading: CircleAvatar(
+            backgroundImage: AssetImage('assets/peanut.png'),
+          ),
+          title: Text('Peanuts'),
+          onTap: () {
+            const snackBar = SnackBar(content: Text('I don\'t like Peanuts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+            print('Peanuts'); // TODO save it somehow and show this in the app with a checkmark for example
+          },
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            //try {
+            //  await Navigator.of(context).push(  // TODO Not sure how to route this properly
+            //    MaterialPageRoute(
+            //      builder: (context) => TakePictureScreenState(
+            //      imagePath: imagePath,
+            //      ),
+            //    ),
+            //  );
+            //} catch (e) {
+            // If an error occurs, log the error to the console.
+            //  print(e);
+            //}
+          },
+          child: const Text('Scan menu'),
+          ),
+      ],
+    ).toList(),
   );
 }
