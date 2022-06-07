@@ -38,7 +38,7 @@ dependencies:
   camera:
   path_provider:
   path:
-
+  shared_preferences: ^2.0.15
 
 
 

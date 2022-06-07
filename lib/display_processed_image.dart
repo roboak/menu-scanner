@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
-
-import 'take_picture.dart';
 import 'package:ml_kit_ocr/ml_kit_ocr.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'globals.dart' as gloabls;
 
 // A widget that displays the picture taken by the user.
 class DisplayProcessedImage extends StatefulWidget {
@@ -18,6 +18,7 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
   bool isTextExtracted = false;
   bool isProcessing = false;
   String timeElapsed = '';
+  List<String>? filter;
   late ui.Image ImageToBeDisplayedOnCanvas;
   late RecognisedText scanResults;
   void initState() {
@@ -28,15 +29,6 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Filtered Image')),
-        // The image is stored as a file on the device. Use the `Image.file`
-        // constructor with the given path to display the image.
-        // body: Stack(children: <Widget>[
-        //   Container(
-        //       // height: MediaQuery.of(context).size.height - 150,
-        //       child: Image.file(File(widget.imagePath))),
-        //   // Image.file(File(widget.imagePath)),
-        //   _buildResults()
-        // ])
         body: _buildResults());
   }
 
@@ -52,7 +44,14 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
     isProcessing = false;
     stopwatch.reset();
     stopwatch.stop();
+
+    //loading image which will be displayed
     await _loadImage(File(widget.imagePath));
+
+    //loading user's choice from shared preference
+    final datsource = await gloabls.perferenceInstance;
+    filter = datsource.getStringList("preferences");
+
     isTextExtracted = true;
     // print("Set State called");
     setState(() {});
@@ -67,7 +66,8 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
     // final image = InputImage.fromFilePath(widget.imagePath);
 
     if (isProcessing == false && isTextExtracted == true) {
-      painter = TextDetectorPainter(scanResults, ImageToBeDisplayedOnCanvas);
+      painter =
+          TextDetectorPainter(scanResults, ImageToBeDisplayedOnCanvas, filter!);
       return FittedBox(
           child: SizedBox(
         width: ImageToBeDisplayedOnCanvas.width.toDouble(),
@@ -77,7 +77,7 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
         ),
       ));
     } else {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
   }
 
@@ -89,32 +89,60 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
 
 class TextDetectorPainter extends CustomPainter {
   // TextDetectorPainter(this.absoluteImageSize, this.recognisedText);
-  TextDetectorPainter(this.recognisedText, this.image);
-
-  // final Size absoluteImageSize;
   ui.Image image;
   final RecognisedText recognisedText;
+  List<String> filter;
+  TextDetectorPainter(this.recognisedText, this.image, this.filter) {}
+  late SharedPreferences prefs;
+
+  // final Size absoluteImageSize;
+
+  final textStyle = const TextStyle(
+    color: Color.fromARGB(255, 246, 6, 6),
+    fontSize: 25,
+  );
 
   @override
-  void paint(Canvas canvas, Size size) {
-    // final double scaleX = size.width / absoluteImageSize.width;
-    // final double scaleY = size.height / absoluteImageSize.height;
-    canvas.drawImage(image, Offset.zero, Paint());
-    // Rect scaleRect(TextElement text) {
-    //   return Rect.fromPoints(
-    //     text.cornerPoints[0] * scaleX,
-    //     text.cornerPoints[3] * scaleY,
-    //   );
+  void paint(Canvas canvas, Size size) async {
+    print("entering paint");
+    // for (String ele in filter!) {
+    //   print(ele);
     // }
+    // List<String> filter = await gloabls.perferenceInstance
+    //     .then((SharedPreferences prefs) => prefs.getStringList("preferences"));
 
+    canvas.drawImage(image, Offset.zero, Paint());
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
+
     for (TextBlock block in recognisedText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
           paint.color = Colors.green;
-          canvas.drawRect(element.rect, paint);
+          final textSpan = TextSpan(
+            text: element.text,
+            style: textStyle,
+          );
+          final textPainter = TextPainter(
+            text: textSpan,
+            textDirection: TextDirection.ltr,
+          );
+          textPainter.layout(
+            minWidth: 0,
+            maxWidth: size.width,
+          );
+
+          textPainter.paint(canvas, element.rect.topLeft);
+          // canvas.drawRect(element.rect, paint);
+
+          //If non-veg filter selected and if the recognised text is present in the non-veg dictionary, highlight the words.
+          if (gloabls.non_veg_en_de.contains(element.text.toLowerCase()) &&
+              filter.contains("Non-Vegetarian")) {
+            // if (gloabls.non_veg_en_de
+            // .contains(element.text.toLowerCase())) {
+            canvas.drawRect(element.rect, paint);
+          }
         }
       }
     }
