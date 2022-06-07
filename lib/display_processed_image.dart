@@ -69,13 +69,18 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
       painter =
           TextDetectorPainter(scanResults, ImageToBeDisplayedOnCanvas, filter!);
       return FittedBox(
-          child: SizedBox(
-        width: ImageToBeDisplayedOnCanvas.width.toDouble(),
-        height: ImageToBeDisplayedOnCanvas.height.toDouble(),
-        child: CustomPaint(
-          painter: painter,
-        ),
-      ));
+          child: InteractiveViewer(
+              panEnabled: true,
+              boundaryMargin: EdgeInsets.all(100),
+              minScale: 0.5,
+              maxScale: 2,
+              child: SizedBox(
+                width: ImageToBeDisplayedOnCanvas.width.toDouble(),
+                height: ImageToBeDisplayedOnCanvas.height.toDouble(),
+                child: CustomPaint(
+                  painter: painter,
+                ),
+              )));
     } else {
       return const Center(child: CircularProgressIndicator());
     }
