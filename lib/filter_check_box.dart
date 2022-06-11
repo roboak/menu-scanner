@@ -12,32 +12,49 @@ class DynamicCheckbox extends StatefulWidget {
 }
 
 class DynamicCheckboxState extends State {
-  // TODO Save these values in memory s.t. they can be accessed later on again
-  Map<String, bool?> list = {
+  Map<String, bool?> list1 = {
     'Vegan': false,
     'Vegetarian': false,
-    'Non-Vegetarian': false,
+    'Gluten-free': false,
+    'Dairy-free': false,
+    'Nut-free': false,
+  };
 
-    // 'Tomatoes': false,
-    // 'Onions': false,
-    // 'Peanuts': false,
+  Map<String, bool?> list2 = {
+    'Meat': false,
+    'Dairy': false,
+    'Eggs': false,
+    'Gluten': false,
   };
 
   savePreferences() async {
     List<String> holder_1 = [];
-    list.forEach((key, value) {
+    List<String> holder_2 = [];
+
+    list1.forEach((key, value) {
       if (value == true) {
         holder_1.add(key);
+      }
+    });
+
+    list2.forEach((key, value) {
+      if (value == true) {
+        holder_2.add(key);
       }
     });
 
     // Printing all selected items on Terminal screen.
     print(holder_1);
     // Here you will get all your selected Checkbox items.
-    final SharedPreferences prefs = await globals.perferenceInstance;
-    prefs.setStringList('preferences', holder_1);
+    final SharedPreferences prefs1 = await globals.perferenceInstance;
+    prefs1.setStringList('preferences', holder_1);
     // Clear array after use.
     holder_1.clear();
+
+    final SharedPreferences prefs2 = await globals.perferenceInstance;
+    prefs2.setStringList('preferences', holder_2);
+    // Clear array after use.
+    holder_2.clear();
   }
 
   @override
@@ -45,15 +62,47 @@ class DynamicCheckboxState extends State {
     return Column(children: <Widget>[
       Expanded(
         child: ListView(
-          children: list.keys.map((String key) {
+          children: list1.keys.map((String key) {
             return CheckboxListTile(
               title: Text(key),
-              value: list[key],
+              value: list1[key],
               activeColor: Colors.teal,
               checkColor: Colors.white,
               onChanged: (bool? value) {
                 setState(() {
-                  list[key] = value;
+                  list1[key] = value;
+                });
+                savePreferences();
+              },
+            );
+          }).toList(),
+        ),
+      ),
+      Container(
+        color:Colors.teal,
+        //margin: EdgeInsets.all(20),
+        padding: EdgeInsets.all(10),
+        width:500,
+        height: 60,
+        child: Row(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("  What do you not want to eat?",style: TextStyle(color: Colors.white,fontSize: 20, fontFamily: 'RobotoMono',
+                fontWeight: FontWeight.w500)),
+          ],
+        ),
+      ),
+      Expanded(
+        child: ListView(
+          children: list2.keys.map((String key) {
+            return CheckboxListTile(
+              title: Text(key),
+              value: list2[key],
+              activeColor: Colors.teal,
+              checkColor: Colors.white,
+              onChanged: (bool? value) {
+                setState(() {
+                  list2[key] = value;
                 });
                 savePreferences();
               },
@@ -73,7 +122,6 @@ class DynamicCheckboxState extends State {
 
           try {
             await Navigator.of(context).push(
-              // TODO Not sure how to route this properly
               MaterialPageRoute(
                 builder: (context) => TakePictureScreen(
                   camera: firstCamera,
