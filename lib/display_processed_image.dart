@@ -140,9 +140,10 @@ class TextDetectorPainter extends CustomPainter {
 
           textPainter.paint(canvas, element.rect.topLeft);
           // canvas.drawRect(element.rect, paint);
-
           //If non-veg filter selected and if the recognised text is present in the non-veg dictionary, highlight the words.
-          if (gloabls.non_veg_en_de.contains(element.text.toLowerCase()) &&
+          if (gloabls.non_veg_en_de.contains(element.text
+                  .toLowerCase()
+                  .replaceAll(RegExp('[^A-Za-z]'), '')) &&
               filter.contains("Non-Vegetarian")) {
             // if (gloabls.non_veg_en_de
             // .contains(element.text.toLowerCase())) {
