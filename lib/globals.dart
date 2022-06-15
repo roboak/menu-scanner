@@ -8,6 +8,7 @@ List<String> non_veg_en = [
   "fish",
   "steak",
   "ham",
+  "duck",
   "pork",
   "wings",
   "chicken",
@@ -15,23 +16,33 @@ List<String> non_veg_en = [
   "bbq",
   "ribs",
   "salmon",
-  "seafood"
+  "seafood",
+  "egg",
+  "salami"
 ];
 List<String> non_veg_de = [
+  "hähnchen",
   "rindfleisch",
   "fleisch",
   "fisch",
   "steak",
   "schinken",
-  "schweinefleisch",
+  "schweine",
   "flügel",
   "huhn",
-  "garnelen",
+  "hühn"
+      "garnelen",
   "bbq",
   "rippen",
   "kebab",
   "kebap",
-  "fischrogen"
+  "fischrogen",
+  "ente",
+  "schnitzel",
+  "wurst",
+  "weiner",
+  "flugel",
+  "puten"
 ];
 
 // ignore: non_constant_identifier_names

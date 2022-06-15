@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:menu_scanner/text_matching_util.dart';
 import 'dart:ui' as ui;
 import 'package:ml_kit_ocr/ml_kit_ocr.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'globals.dart' as gloabls;
+import 'package:menu_scanner/display_processed_image.dart';
 
 // A widget that displays the picture taken by the user.
 class DisplayProcessedImage extends StatefulWidget {
@@ -50,7 +52,7 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
 
     //loading user's choice from shared preference
     final datsource = await gloabls.perferenceInstance;
-    filter = datsource.getStringList("preferences");
+    filter = datsource.getStringList("eat_preferences");
 
     isTextExtracted = true;
     // print("Set State called");
@@ -120,7 +122,8 @@ class TextDetectorPainter extends CustomPainter {
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
-
+    // Utils utils = Utils();
+    // print(utils.textMatch("Chickel", gloabls.non_veg_en_de));
     for (TextBlock block in recognisedText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
@@ -137,17 +140,16 @@ class TextDetectorPainter extends CustomPainter {
             minWidth: 0,
             maxWidth: size.width,
           );
-
           textPainter.paint(canvas, element.rect.topLeft);
-          // canvas.drawRect(element.rect, paint);
+
           //If non-veg filter selected and if the recognised text is present in the non-veg dictionary, highlight the words.
-          if (gloabls.non_veg_en_de.contains(element.text
-                  .toLowerCase()
-                  .replaceAll(RegExp('[^A-Za-z]'), '')) &&
-              filter.contains("Non-Vegetarian")) {
-            // if (gloabls.non_veg_en_de
-            // .contains(element.text.toLowerCase())) {
-            canvas.drawRect(element.rect, paint);
+
+          // Filter check based on user preferences.
+          if (filter.contains("Non-Vegetarian")) {
+            Utils utils = Utils();
+            if (utils.textMatch(element.text, gloabls.non_veg_en_de)) {
+              canvas.drawRect(element.rect, paint);
+            }
           }
         }
       }

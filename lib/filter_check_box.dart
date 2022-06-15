@@ -13,6 +13,7 @@ class DynamicCheckbox extends StatefulWidget {
 
 class DynamicCheckboxState extends State {
   Map<String, bool?> list1 = {
+    'Non-Vegetarian': false,
     'Vegan': false,
     'Vegetarian': false,
     'Gluten-free': false,
@@ -47,12 +48,12 @@ class DynamicCheckboxState extends State {
     print(holder_1);
     // Here you will get all your selected Checkbox items.
     final SharedPreferences prefs1 = await globals.perferenceInstance;
-    prefs1.setStringList('preferences', holder_1);
+    prefs1.setStringList('eat_preferences', holder_1);
     // Clear array after use.
     holder_1.clear();
 
     final SharedPreferences prefs2 = await globals.perferenceInstance;
-    prefs2.setStringList('preferences', holder_2);
+    prefs2.setStringList('avoid_preferences', holder_2);
     // Clear array after use.
     holder_2.clear();
   }
@@ -79,16 +80,20 @@ class DynamicCheckboxState extends State {
         ),
       ),
       Container(
-        color:Colors.teal,
+        color: Colors.teal,
         //margin: EdgeInsets.all(20),
         padding: EdgeInsets.all(10),
-        width:500,
+        width: 500,
         height: 60,
         child: Row(
           //mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("  What do you not want to eat?",style: TextStyle(color: Colors.white,fontSize: 20, fontFamily: 'RobotoMono',
-                fontWeight: FontWeight.w500)),
+          children: const [
+            Text("  What do you not want to eat?",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontFamily: 'RobotoMono',
+                    fontWeight: FontWeight.w500)),
           ],
         ),
       ),
