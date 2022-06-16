@@ -18,7 +18,9 @@ List<String> non_veg_en = [
   "salmon",
   "seafood",
   "egg",
-  "salami"
+  "salami",
+  "tuna",
+  "salmon"
 ];
 List<String> non_veg_de = [
   "hähnchen",
@@ -30,8 +32,8 @@ List<String> non_veg_de = [
   "schweine",
   "flügel",
   "huhn",
-  "hühn"
-      "garnelen",
+  "hühn",
+  "garnelen",
   "bbq",
   "rippen",
   "kebab",
@@ -42,11 +44,42 @@ List<String> non_veg_de = [
   "wurst",
   "weiner",
   "flugel",
-  "puten"
+  "puten",
 ];
 
+List<String> non_vegan_en = [
+  "cheese",
+  "butter",
+  "milk",
+  "cream",
+  "mayonnaise",
+  "honey",
+  "yoghurt",
+  "curd",
+  "gelato",
+  "custard",
+  "casein"
+];
+
+List<String> non_vegan_de = [
+  "käse",
+  "butter",
+  "milch",
+  "creme",
+  "sahne",
+  "mayonnaise",
+  "honig",
+  "joghurt",
+  "quark",
+  "eis",
+  "pudding",
+  "kasein"
+];
 // ignore: non_constant_identifier_names
 List<String> non_veg_en_de = List.from(non_veg_de)..addAll(non_veg_en);
+List<String> non_vegan_en_de = List.from(non_vegan_de)..addAll(non_vegan_en);
 
 final Future<SharedPreferences> perferenceInstance =
     SharedPreferences.getInstance();
+
+String developer_email = "akashshubham95@gmail.com";

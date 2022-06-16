@@ -17,11 +17,20 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
       ),
       home: Scaffold(
-        appBar: AppBar(title: Text('What do you want to eat?')),
-        // body: BodyLayout(), //TODO Check this our
-        // body: CheckBoxListTile(), //TODO Check this our
-        body: DynamicCheckbox(), //TODO Check this our
-      ),
+          appBar: AppBar(title: Text('What do you want to eat?')),
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/menu_scanner_icon.png"),
+                fit: BoxFit.contain,
+              ),
+            ),
+            child: DynamicCheckbox(),
+          )
+          // body: BodyLayout(), //TODO Check this our
+          // body: CheckBoxListTile(), //TODO Check this our
+          // body: DynamicCheckbox(), //TODO Check this our
+          ),
     );
   }
 }

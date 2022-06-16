@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'package:ml_kit_ocr/ml_kit_ocr.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'globals.dart' as gloabls;
-import 'package:menu_scanner/display_processed_image.dart';
+import 'email_sender.dart';
 
 // A widget that displays the picture taken by the user.
 class DisplayProcessedImage extends StatefulWidget {
@@ -31,7 +31,23 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Filtered Image')),
-        body: _buildResults());
+        body: _buildResults(),
+        floatingActionButton: ElevatedButton(
+          onPressed: () async {
+            // When this button is clicked display filtered image with a button to go back to the capturing page.
+            try {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => EmailSenderWidget(),
+                ),
+              );
+            } catch (e) {
+              // If an error occurs, log the error to the console.
+              print(e);
+            }
+          },
+          child: const Text('Report Issue'),
+        ));
   }
 
   Future<void> getOcrResults() async {
@@ -70,6 +86,7 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
     if (isProcessing == false && isTextExtracted == true) {
       painter =
           TextDetectorPainter(scanResults, ImageToBeDisplayedOnCanvas, filter!);
+
       return FittedBox(
           child: InteractiveViewer(
               panEnabled: true,
@@ -111,43 +128,41 @@ class TextDetectorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) async {
-    print("entering paint");
-    // for (String ele in filter!) {
-    //   print(ele);
-    // }
-    // List<String> filter = await gloabls.perferenceInstance
-    //     .then((SharedPreferences prefs) => prefs.getStringList("preferences"));
-
     canvas.drawImage(image, Offset.zero, Paint());
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
-    // Utils utils = Utils();
-    // print(utils.textMatch("Chickel", gloabls.non_veg_en_de));
     for (TextBlock block in recognisedText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
-          paint.color = Colors.green;
-          final textSpan = TextSpan(
-            text: element.text,
-            style: textStyle,
-          );
-          final textPainter = TextPainter(
-            text: textSpan,
-            textDirection: TextDirection.ltr,
-          );
-          textPainter.layout(
-            minWidth: 0,
-            maxWidth: size.width,
-          );
-          textPainter.paint(canvas, element.rect.topLeft);
+          paint.color = Colors.red;
+          // final textSpan = TextSpan(
+          //   text: element.text,
+          //   style: textStyle,
+          // );
+          // final textPainter = TextPainter(
+          //   text: textSpan,
+          //   textDirection: TextDirection.ltr,
+          // );
+          // textPainter.layout(
+          //   minWidth: 0,
+          //   maxWidth: size.width,
+          // );
+          // textPainter.paint(canvas, element.rect.topLeft);
 
           //If non-veg filter selected and if the recognised text is present in the non-veg dictionary, highlight the words.
 
           // Filter check based on user preferences.
-          if (filter.contains("Non-Vegetarian")) {
-            Utils utils = Utils();
+          print("printing filter: $filter");
+          Utils utils = Utils();
+          if (filter.contains("Vegetarian")) {
             if (utils.textMatch(element.text, gloabls.non_veg_en_de)) {
+              canvas.drawRect(element.rect, paint);
+            }
+          }
+          if (filter.contains("Vegan")) {
+            if (utils.textMatch(element.text, gloabls.non_vegan_en_de) ||
+                utils.textMatch(element.text, gloabls.non_veg_en_de)) {
               canvas.drawRect(element.rect, paint);
             }
           }

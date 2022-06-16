@@ -9,12 +9,13 @@ class Utils {
     for (String ele in filter) {
       // print("element: $ele");
       double matchPercentage = ele.similarityTo(key);
-      // print("match percentage of dict_ele = $ele with ocr_word = $key: $matchPercentage");
+      print(
+          "match percentage of dict_ele = $ele with ocr_word = $key: $matchPercentage");
 
       if (key.contains(ele) && matchPercentage > 0.4) {
         // Case: when the detected word spelling is correct.
         result = true;
-        // print("found the result as a substring");
+        print("found the result as a substring");
 
         break;
       } else {
