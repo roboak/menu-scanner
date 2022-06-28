@@ -157,13 +157,16 @@ class TextDetectorPainter extends CustomPainter {
           print("printing filter: $filter");
           Utils utils = Utils();
           if (filter.contains("Vegetarian")) {
-            if (utils.textMatch(element.text, gloabls.non_veg_en_de)) {
+            if (utils.textMatch(element.text, gloabls.non_veg_en_de) ==
+                MatchStatus.MATCHED) {
               canvas.drawRect(element.rect, paint);
             }
           }
           if (filter.contains("Vegan")) {
-            if (utils.textMatch(element.text, gloabls.non_vegan_en_de) ||
-                utils.textMatch(element.text, gloabls.non_veg_en_de)) {
+            if ((utils.textMatch(element.text, gloabls.non_vegan_en_de) ==
+                    MatchStatus.MATCHED) ||
+                (utils.textMatch(element.text, gloabls.non_veg_en_de) ==
+                    MatchStatus.MATCHED)) {
               canvas.drawRect(element.rect, paint);
             }
           }

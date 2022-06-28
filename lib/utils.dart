@@ -4,33 +4,46 @@ import 'package:flutter/services.dart';
 import 'package:string_similarity/string_similarity.dart';
 import 'globals.dart' as globals;
 
+enum MatchStatus { MATCHED, UNMATCHED, NOT_SURE }
+
 class Utils {
-  bool textMatch(String key, List<String> filter) {
-    //         gloabls.non_veg_en_de.contains(element.text
-    bool result = false;
-    key = key.toLowerCase().replaceAll(RegExp('[^A-Za-zäöüÄÖÜ]'), '');
-    // print("key = $key");
-    for (String ele in filter) {
-      // print("element: $ele");
-      double matchPercentage = ele.similarityTo(key);
+  MatchStatus textMatch(String detected_word, List<String> filter) {
+    MatchStatus result = MatchStatus.UNMATCHED;
+    detected_word =
+        detected_word.toLowerCase().replaceAll(RegExp('[^A-Za-zäöüÄÖÜ]'), '');
+    // print("detected_word = $detected_word");
+    for (String dict_word in filter) {
+      // print("dict_word: $dict_word");
+
+      // double matchPercentage = dict_word.similarityTo(detected_word);
+
       // print(
       //     "match percentage of dict_ele = $ele with ocr_word = $key: $matchPercentage");
 
-      if (key.contains(ele) && matchPercentage > 0.4) {
-        // Case: when the detected word spelling is correct.
-        result = true;
-        // print("found the result as a substring");
-
-        break;
-      } else {
-        // Do approximate string matching to account for some spelling errors.
-
-        if (matchPercentage > 0.8) {
-          result = true;
+      // Case: when the detected word spelling is correct.
+      // print("found the result as a substring");
+      // If ele in the 1st half or last half of ele, then only consider the match.
+      // Avoid matches (ham, champignon); (ei, reis); (egg, veggie)
+      // Exception: (Ei, Eis)
+      if ((detected_word.length >= dict_word.length) &&
+          ((detected_word.substring(0, dict_word.length) == dict_word) ||
+              (detected_word.substring(detected_word.length - dict_word.length,
+                      detected_word.length) ==
+                  dict_word))) {
+        // print(
+        //     "Detected word1: " + detected_word.substring(0, dict_word.length));
+        if (detected_word.length - dict_word.length == 1) {
+          result = MatchStatus.NOT_SURE;
         } else {
-          result = false;
+          result = MatchStatus.MATCHED;
+          break;
         }
       }
+      //else if (matchPercentage > 0.8) {
+      //   // Do approximate string matching to account for some spelling errors.
+      //   result = MatchStatus.MATCHED;
+      //   break;
+      // }
     }
     // print("result = $result");
     return result;
