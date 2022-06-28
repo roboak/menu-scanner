@@ -81,6 +81,10 @@ flutter:
     - assets/vegan.png
     - assets/vegetarian.png
     - assets/menu_scanner_icon.png
+    - assets/nonvegan_food_en.txt
+    - assets/nonvegan_exclusive_food_de.txt
+    - assets/nonvegetarian_food_de.txt
+    - assets/nonvegetarian_food_en.txt
 
 
   # To add assets to your application, add an assets section, like this:

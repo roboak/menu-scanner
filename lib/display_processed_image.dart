@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:menu_scanner/text_matching_util.dart';
+import 'package:menu_scanner/utils.dart';
 import 'dart:ui' as ui;
 import 'package:ml_kit_ocr/ml_kit_ocr.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,7 +50,7 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
         ));
   }
 
-  Future<void> getOcrResults() async {
+  Future<void> preprocess() async {
     // String recognitions = '';
     final ocr = MlKitOcr();
     final stopwatch = Stopwatch()..start();
@@ -69,7 +69,8 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
     //loading user's choice from shared preference
     final datsource = await gloabls.perferenceInstance;
     filter = datsource.getStringList("eat_preferences");
-
+    Utils ut = Utils();
+    await ut.loadDict();
     isTextExtracted = true;
     // print("Set State called");
     setState(() {});
@@ -79,7 +80,7 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
     CustomPainter painter;
     // print(scanResults);
     if (isTextExtracted == false) {
-      getOcrResults();
+      preprocess();
     }
     // final image = InputImage.fromFilePath(widget.imagePath);
 
@@ -90,7 +91,7 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
       return FittedBox(
           child: InteractiveViewer(
               panEnabled: true,
-              boundaryMargin: EdgeInsets.all(100),
+              boundaryMargin: const EdgeInsets.all(100),
               minScale: 0.5,
               maxScale: 2,
               child: SizedBox(
