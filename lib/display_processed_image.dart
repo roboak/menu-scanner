@@ -4,12 +4,13 @@ import 'package:menu_scanner/utils.dart';
 import 'dart:ui' as ui;
 import 'package:ml_kit_ocr/ml_kit_ocr.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'globals.dart' as gloabls;
+import 'globals.dart' as globals;
 import 'email_sender.dart';
 
 // A widget that displays the picture taken by the user.
 class DisplayProcessedImage extends StatefulWidget {
   final String imagePath;
+
   const DisplayProcessedImage({super.key, required this.imagePath});
 
   @override
@@ -23,6 +24,7 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
   List<String>? filter;
   late ui.Image ImageToBeDisplayedOnCanvas;
   late RecognisedText scanResults;
+
   void initState() {
     super.initState();
   }
@@ -67,7 +69,7 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
     await _loadImage(File(widget.imagePath));
 
     //loading user's choice from shared preference
-    final datsource = await gloabls.perferenceInstance;
+    final datsource = await globals.perferenceInstance;
     filter = datsource.getStringList("eat_preferences");
     Utils ut = Utils();
     await ut.loadDict();
@@ -117,6 +119,7 @@ class TextDetectorPainter extends CustomPainter {
   ui.Image image;
   final RecognisedText recognisedText;
   List<String> filter;
+
   TextDetectorPainter(this.recognisedText, this.image, this.filter) {}
   late SharedPreferences prefs;
 
@@ -156,17 +159,19 @@ class TextDetectorPainter extends CustomPainter {
           // Filter check based on user preferences.
           print("printing filter: $filter");
           Utils utils = Utils();
-          if (filter.contains("Vegetarian")) {
-            if (utils.textMatch(element.text, gloabls.non_veg_en_de) ==
-                MatchStatus.MATCHED) {
+          if (filter.contains("Vegan")) {
+            if ((utils.textMatch(element.text, globals.non_vegan_1root_de,
+                        globals.non_vegan_keyroots_de) ==
+                    MatchStatus.MATCHED) ||
+                (utils.textMatch(element.text, globals.non_veg_1root_de,
+                        globals.non_vegan_keyroots_de) ==
+                    MatchStatus.MATCHED)) {
               canvas.drawRect(element.rect, paint);
             }
-          }
-          if (filter.contains("Vegan")) {
-            if ((utils.textMatch(element.text, gloabls.non_vegan_en_de) ==
-                    MatchStatus.MATCHED) ||
-                (utils.textMatch(element.text, gloabls.non_veg_en_de) ==
-                    MatchStatus.MATCHED)) {
+          } else if (filter.contains("Vegetarian")) {
+            if (utils.textMatch(element.text, globals.non_veg_1root_de,
+                    globals.non_veg_keyroots_de) ==
+                MatchStatus.MATCHED) {
               canvas.drawRect(element.rect, paint);
             }
           }

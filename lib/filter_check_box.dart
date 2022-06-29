@@ -50,6 +50,9 @@ class DynamicCheckboxState extends State {
     // Printing all selected items on Terminal screen.
     print("printing holder_1 $holder_1");
     // Here you will get all your selected Checkbox items.
+    Map<String, Object> values = <String, Object>{'counter': 1};
+    SharedPreferences.setMockInitialValues(values);
+    
     final SharedPreferences prefs1 = await globals.perferenceInstance;
     prefs1.setStringList('eat_preferences', holder_1);
     // Clear array after use.
@@ -153,7 +156,15 @@ class DynamicCheckboxState extends State {
         onPressed: () async {
           WidgetsFlutterBinding.ensureInitialized();
           // Obtain a list of the available cameras on the device.
-          final cameras = await availableCameras();
+          var cameras;
+          WidgetsFlutterBinding.ensureInitialized();
+          try {
+             cameras = await availableCameras();
+          } on CameraException catch (e) {
+            print(e.description);
+          }
+
+          // final cameras = await availableCameras();
           // Get a specific camera from the list of available cameras.
           final firstCamera = cameras.first;
           try {
