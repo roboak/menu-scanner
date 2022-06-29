@@ -9,3 +9,5 @@ fisch
 fish
 speck
 wurst
+rind
+pute

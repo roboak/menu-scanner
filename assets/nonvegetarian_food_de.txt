@@ -240,6 +240,7 @@ tri-spitze
 rock
 aufhänger
 schnitte
+schnitzel
 brust
 truhe
 schweine
@@ -258,3 +259,4 @@ fischleberöl
 fischöl
 haifischleberöl
 meeresschildkrötenöl
+schnitzel

@@ -60,3 +60,4 @@ quark
 gelatine
 kasein
 isinglass
+omelet

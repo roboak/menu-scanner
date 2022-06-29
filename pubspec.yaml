@@ -89,6 +89,8 @@ flutter:
     - assets/nonvegan_veg_food_keyroots_de.txt
     - assets/nonvegetarian_food_de.txt
     - assets/nonvegetarian_food_keyroots_de.txt
+    - assets/nonvegan_veg_food_en.txt
+    - assets/nonvegetarian_food_en.txt
 
 
   # To add assets to your application, add an assets section, like this:

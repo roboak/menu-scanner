@@ -53,6 +53,10 @@ class Utils {
     globals.non_veg_keyroots_de =
         preprocessVocab(await loadAsset("nonvegetarian_food_keyroots_de.txt"));
 
-    // Preprocess the vocabs by replacing the umlauts
+    globals.non_vegan_en = await loadAsset("nonvegan_veg_food_en.txt");
+    globals.non_veg_en = await loadAsset("nonvegetarian_food_en.txt");
+
+    globals.non_vegan_1root_de.addAll(globals.non_vegan_en);
+    globals.non_veg_1root_de.addAll(globals.non_veg_en);
   }
 }
