@@ -232,6 +232,8 @@ filet
 futter
 flanke
 schaft
+brachsen
+schleie
 lende
 schwanz
 kopf

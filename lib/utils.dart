@@ -10,18 +10,25 @@ class Utils {
     detected_word = detected_word
         .toLowerCase()
         .replaceAll(RegExp('[^a-zäöü]'), '')
-        .replaceAll('ä', 'a')
-        .replaceAll('ö', 'o')
-        .replaceAll('ü', 'u');
+        .replaceAll(RegExp('[üûūùú]'), 'u')
+        .replaceAll(RegExp('[ēëėèéê]'), 'e')
+        .replaceAll(RegExp('[äãåāâàá]'), 'a')
+        .replaceAll(RegExp('[šś]'), 's')
+        .replaceAll(RegExp('[ç]'), 'c')
+        .replaceAll(RegExp('[öôòóõō]'), 'o')
+        .replaceAll(RegExp('[íîīìï]'), 'i');
 
     for (String dict_word in keyroot_filter) {
-      if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
+      if (detected_word.contains(dict_word))
+        return MatchStatus.MATCHED;
     }
     for (String dict_word in oneroot_filter) {
       if (dict_word.length > 4) {
-        if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
+        if (detected_word.contains(dict_word))
+          return MatchStatus.MATCHED;
       } else {
-        if (detected_word == dict_word) return MatchStatus.MATCHED;
+        if (detected_word == dict_word)
+          return MatchStatus.MATCHED;
       }
     }
     return MatchStatus.UNMATCHED;

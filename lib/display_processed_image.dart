@@ -164,7 +164,7 @@ class TextDetectorPainter extends CustomPainter {
                         globals.non_vegan_keyroots_de) ==
                     MatchStatus.MATCHED) ||
                 (utils.textMatch(element.text, globals.non_veg_1root_de,
-                        globals.non_vegan_keyroots_de) ==
+                        globals.non_veg_keyroots_de) ==
                     MatchStatus.MATCHED)) {
               canvas.drawRect(element.rect, paint);
             }

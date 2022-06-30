@@ -28,6 +28,7 @@ caribou
 carp
 catfish
 catgut
+cattle
 caviar
 caviare
 chamois
@@ -182,6 +183,8 @@ scorpion
 tilefish
 walleye
 weakfish
+bream
+tench
 croaker
 whiting
 butterfish
