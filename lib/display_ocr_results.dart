@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ml_kit_ocr/ml_kit_ocr.dart';
 
@@ -47,7 +48,11 @@ class _MyAppState extends State<DisplayOcrResults> {
         recognitions += '\n';
         for (var words in lines.elements) {
           recognitions += words.text + ' ';
-          for (var temp in words.cornerPoints) print(temp);
+          for (var temp in words.cornerPoints) {
+            if (kDebugMode) {
+              print(temp);
+            }
+          }
         }
       }
     }

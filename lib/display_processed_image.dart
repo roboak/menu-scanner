@@ -1,13 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:menu_scanner/utils.dart';
 import 'dart:ui' as ui;
-
-import 'take_picture.dart';
 import 'package:ml_kit_ocr/ml_kit_ocr.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'globals.dart' as globals;
+import 'email_sender.dart';
 
 // A widget that displays the picture taken by the user.
 class DisplayProcessedImage extends StatefulWidget {
   final String imagePath;
+
   const DisplayProcessedImage({super.key, required this.imagePath});
 
   @override
@@ -18,8 +21,10 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
   bool isTextExtracted = false;
   bool isProcessing = false;
   String timeElapsed = '';
+  List<String>? filter;
   late ui.Image ImageToBeDisplayedOnCanvas;
   late RecognisedText scanResults;
+
   void initState() {
     super.initState();
   }
@@ -28,19 +33,26 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Filtered Image')),
-        // The image is stored as a file on the device. Use the `Image.file`
-        // constructor with the given path to display the image.
-        // body: Stack(children: <Widget>[
-        //   Container(
-        //       // height: MediaQuery.of(context).size.height - 150,
-        //       child: Image.file(File(widget.imagePath))),
-        //   // Image.file(File(widget.imagePath)),
-        //   _buildResults()
-        // ])
-        body: _buildResults());
+        body: _buildResults(),
+        floatingActionButton: ElevatedButton(
+          onPressed: () async {
+            // When this button is clicked display filtered image with a button to go back to the capturing page.
+            try {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => EmailSenderWidget(),
+                ),
+              );
+            } catch (e) {
+              // If an error occurs, log the error to the console.
+              print(e);
+            }
+          },
+          child: const Text('Report Issue'),
+        ));
   }
 
-  Future<void> getOcrResults() async {
+  Future<void> preprocess() async {
     // String recognitions = '';
     final ocr = MlKitOcr();
     final stopwatch = Stopwatch()..start();
@@ -52,7 +64,15 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
     isProcessing = false;
     stopwatch.reset();
     stopwatch.stop();
+
+    //loading image which will be displayed
     await _loadImage(File(widget.imagePath));
+
+    //loading user's choice from shared preference
+    final datsource = await globals.perferenceInstance;
+    filter = datsource.getStringList("eat_preferences");
+    Utils ut = Utils();
+    await ut.loadDict();
     isTextExtracted = true;
     // print("Set State called");
     setState(() {});
@@ -62,22 +82,29 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
     CustomPainter painter;
     // print(scanResults);
     if (isTextExtracted == false) {
-      getOcrResults();
+      preprocess();
     }
     // final image = InputImage.fromFilePath(widget.imagePath);
 
     if (isProcessing == false && isTextExtracted == true) {
-      painter = TextDetectorPainter(scanResults, ImageToBeDisplayedOnCanvas);
+      painter =
+          TextDetectorPainter(scanResults, ImageToBeDisplayedOnCanvas, filter!);
+
       return FittedBox(
-          child: SizedBox(
-        width: ImageToBeDisplayedOnCanvas.width.toDouble(),
-        height: ImageToBeDisplayedOnCanvas.height.toDouble(),
-        child: CustomPaint(
-          painter: painter,
-        ),
-      ));
+          child: InteractiveViewer(
+              panEnabled: true,
+              boundaryMargin: const EdgeInsets.all(100),
+              minScale: 0.5,
+              maxScale: 2,
+              child: SizedBox(
+                width: ImageToBeDisplayedOnCanvas.width.toDouble(),
+                height: ImageToBeDisplayedOnCanvas.height.toDouble(),
+                child: CustomPaint(
+                  painter: painter,
+                ),
+              )));
     } else {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
   }
 
@@ -89,32 +116,65 @@ class ProcessedImageState extends State<DisplayProcessedImage> {
 
 class TextDetectorPainter extends CustomPainter {
   // TextDetectorPainter(this.absoluteImageSize, this.recognisedText);
-  TextDetectorPainter(this.recognisedText, this.image);
-
-  // final Size absoluteImageSize;
   ui.Image image;
   final RecognisedText recognisedText;
+  List<String> filter;
+
+  TextDetectorPainter(this.recognisedText, this.image, this.filter) {}
+  late SharedPreferences prefs;
+
+  // final Size absoluteImageSize;
+
+  final textStyle = const TextStyle(
+    color: Color.fromARGB(255, 246, 6, 6),
+    fontSize: 25,
+  );
 
   @override
-  void paint(Canvas canvas, Size size) {
-    // final double scaleX = size.width / absoluteImageSize.width;
-    // final double scaleY = size.height / absoluteImageSize.height;
+  void paint(Canvas canvas, Size size) async {
     canvas.drawImage(image, Offset.zero, Paint());
-    // Rect scaleRect(TextElement text) {
-    //   return Rect.fromPoints(
-    //     text.cornerPoints[0] * scaleX,
-    //     text.cornerPoints[3] * scaleY,
-    //   );
-    // }
-
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
     for (TextBlock block in recognisedText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
-          paint.color = Colors.green;
-          canvas.drawRect(element.rect, paint);
+          paint.color = Colors.red;
+          // final textSpan = TextSpan(
+          //   text: element.text,
+          //   style: textStyle,
+          // );
+          // final textPainter = TextPainter(
+          //   text: textSpan,
+          //   textDirection: TextDirection.ltr,
+          // );
+          // textPainter.layout(
+          //   minWidth: 0,
+          //   maxWidth: size.width,
+          // );
+          // textPainter.paint(canvas, element.rect.topLeft);
+
+          //If non-veg filter selected and if the recognised text is present in the non-veg dictionary, highlight the words.
+
+          // Filter check based on user preferences.
+          print("printing filter: $filter");
+          Utils utils = Utils();
+          if (filter.contains("Vegan")) {
+            if ((utils.textMatch(element.text, globals.non_vegan_1root_de,
+                        globals.non_vegan_keyroots_de) ==
+                    MatchStatus.MATCHED) ||
+                (utils.textMatch(element.text, globals.non_veg_1root_de,
+                        globals.non_veg_keyroots_de) ==
+                    MatchStatus.MATCHED)) {
+              canvas.drawRect(element.rect, paint);
+            }
+          } else if (filter.contains("Vegetarian")) {
+            if (utils.textMatch(element.text, globals.non_veg_1root_de,
+                    globals.non_veg_keyroots_de) ==
+                MatchStatus.MATCHED) {
+              canvas.drawRect(element.rect, paint);
+            }
+          }
         }
       }
     }
