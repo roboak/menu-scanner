@@ -19,6 +19,7 @@ class DynamicCheckbox extends StatefulWidget {
 }
 
 class DynamicCheckboxState extends State {
+  final keyIsFirstLoaded = 'is_first_loaded';
   Map<String, FoodPreference> list1 = {
     'Vegan': FoodPreference("Vegan", "assets/vegan.png", false),
     'Vegetarian': FoodPreference("Vegetarian", "assets/vegetarian.png", false),
@@ -64,29 +65,10 @@ class DynamicCheckboxState extends State {
     // holder_2.clear();
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return ListTile(
-  //       onTap: null,
-  //       leading: CircleAvatar(
-  //           backgroundColor: Colors.teal,
-  //           child: new Image(image: new AssetImage(foodPreference.image))),
-  //       title: Row(
-  //         children: <Widget>[
-  //           Expanded(child: Text(foodPreference.name)),
-  //           Checkbox(
-  //               value: foodPreference.isCheck,
-  //               onChanged: (bool? value) {
-  //                 setState(() {
-  //                   foodPreference.isCheck = value!;
-  //                 });
-  //               })
-  //         ],
-  //       ));
-  // }
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () => showDialogIfFirstLoaded(context));
     return Column(children: <Widget>[
       Expanded(
         child: ListView(
@@ -112,42 +94,7 @@ class DynamicCheckboxState extends State {
           }).toList(),
         ),
       ),
-      // Container(
-      //   color: Colors.teal,
-      //   //margin: EdgeInsets.all(20),
-      //   padding: EdgeInsets.all(10),
-      //   width: 500,
-      //   height: 60,
-      //   child: Row(
-      //     //mainAxisAlignment: MainAxisAlignment.center,
-      //     children: const [
-      //       Text("  What do you not want to eat?",
-      //           style: TextStyle(
-      //               color: Colors.white,
-      //               fontSize: 20,
-      //               fontFamily: 'RobotoMono',
-      //               fontWeight: FontWeight.w500)),
-      //     ],
-      //   ),
-      // ),
-      // Expanded(
-      //   child: ListView(
-      //     children: list2.keys.map((String key) {
-      //       return CheckboxListTile(
-      //         title: Text(key),
-      //         value: list2[key],
-      //         activeColor: Colors.teal,
-      //         checkColor: Colors.white,
-      //         onChanged: (bool? value) {
-      //           setState(() {
-      //             list2[key] = value;
-      //           });
-      //           savePreferences();
-      //         },
-      //       );
-      //     }).toList(),
-      //   ),
-      // ),
+
       const Text(
         "Note: The food ingredients which should be avoided will be highlighted in red.",
         style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
@@ -184,4 +131,35 @@ class DynamicCheckboxState extends State {
       ),
     ]);
   }
+
+  showDialogIfFirstLoaded(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? isFirstLoaded = prefs.getBool(keyIsFirstLoaded);
+    if (isFirstLoaded == null) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: const Text("Disclaimer"),
+            content: const Text(
+                "Note that the current version of application is in Beta mode and can make some false recommendations in food choices. "
+                    "Please use your discretion as well while ordering the food."),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              TextButton(
+                child: const Text("Dismiss"),
+                onPressed: () {
+                  // Close the dialog
+                  Navigator.of(context).pop();
+                  prefs.setBool(keyIsFirstLoaded, false);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
 }
