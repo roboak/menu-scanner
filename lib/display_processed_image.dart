@@ -140,38 +140,16 @@ class TextDetectorPainter extends CustomPainter {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
           paint.color = Colors.red;
-          // final textSpan = TextSpan(
-          //   text: element.text,
-          //   style: textStyle,
-          // );
-          // final textPainter = TextPainter(
-          //   text: textSpan,
-          //   textDirection: TextDirection.ltr,
-          // );
-          // textPainter.layout(
-          //   minWidth: 0,
-          //   maxWidth: size.width,
-          // );
-          // textPainter.paint(canvas, element.rect.topLeft);
-
-          //If non-veg filter selected and if the recognised text is present in the non-veg dictionary, highlight the words.
 
           // Filter check based on user preferences.
           print("printing filter: $filter");
           Utils utils = Utils();
           if (filter.contains("Vegan")) {
-            if ((utils.textMatch(element.text, globals.non_vegan_1root_de,
-                        globals.non_vegan_keyroots_de) ==
-                    MatchStatus.MATCHED) ||
-                (utils.textMatch(element.text, globals.non_veg_1root_de,
-                        globals.non_veg_keyroots_de) ==
-                    MatchStatus.MATCHED)) {
+            if (utils.isVegan(element.text, line.recognizedLanguages)){
               canvas.drawRect(element.rect, paint);
             }
           } else if (filter.contains("Vegetarian")) {
-            if (utils.textMatch(element.text, globals.non_veg_1root_de,
-                    globals.non_veg_keyroots_de) ==
-                MatchStatus.MATCHED) {
+            if (utils.isVegetarian(element.text, line.recognizedLanguages)){
               canvas.drawRect(element.rect, paint);
             }
           }

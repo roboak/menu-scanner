@@ -5,8 +5,8 @@ import 'globals.dart' as globals;
 enum MatchStatus { MATCHED, UNMATCHED, NOT_SURE }
 
 class Utils {
-  MatchStatus textMatch(String detected_word, Set<String> oneroot_filter,
-      Set<String> keyroot_filter) {
+  MatchStatus textMatch(String detected_word, List<String> lang, 
+      List<Map> filters) {
     detected_word = detected_word
         .toLowerCase()
         .replaceAll(RegExp('[^a-zäöü]'), '')
@@ -62,8 +62,29 @@ class Utils {
 
     globals.non_vegan_en = await loadAsset("nonvegan_veg_food_en.txt");
     globals.non_veg_en = await loadAsset("nonvegetarian_food_en.txt");
+  }
 
-    globals.non_vegan_1root_de.addAll(globals.non_vegan_en);
-    globals.non_veg_1root_de.addAll(globals.non_veg_en);
+  isVegan(String detected_word, List<String>lang){
+    if (textMatch(detected_word, lang,
+        [{"de": {"1root":globals.non_vegan_1root_de,
+          "keyroot":globals.non_vegan_keyroots_de}},
+          {"en": globals.non_vegan_en}]) ==
+        MatchStatus.MATCHED || isVegetarian(detected_word, lang)){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  isVegetarian(String detected_word, List<String>lang){
+    if (textMatch(detected_word, lang,
+        [{"de": {"1root":globals.non_veg_1root_de,
+          "keyroot":globals.non_veg_keyroots_de}},
+        {"en": globals.non_veg_en}]) ==
+        MatchStatus.MATCHED) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
