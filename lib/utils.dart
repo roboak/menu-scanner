@@ -5,8 +5,7 @@ import 'globals.dart' as globals;
 enum MatchStatus { MATCHED, UNMATCHED, NOT_SURE }
 
 class Utils {
-  MatchStatus textMatch(String detected_word, List<String> lang, 
-      List<Map> filters) {
+  MatchStatus textMatch(String detected_word, List<String> langs, Map filters) {
     detected_word = detected_word
         .toLowerCase()
         .replaceAll(RegExp('[^a-zäöü]'), '')
@@ -18,19 +17,28 @@ class Utils {
         .replaceAll(RegExp('[öôòóõō]'), 'o')
         .replaceAll(RegExp('[íîīìï]'), 'i');
 
-    for (String dict_word in keyroot_filter) {
-      if (detected_word.contains(dict_word))
-        return MatchStatus.MATCHED;
-    }
-    for (String dict_word in oneroot_filter) {
-      if (dict_word.length > 4) {
-        if (detected_word.contains(dict_word))
-          return MatchStatus.MATCHED;
-      } else {
-        if (detected_word == dict_word)
-          return MatchStatus.MATCHED;
+    for (String ln in langs) {
+      Map ln_filters = filters[ln];
+      if (ln_filters.containsKey('keyroot')) {
+        Set<String> keyroot_filter = ln_filters['keyroot'];
+        for (String dict_word in keyroot_filter) {
+          if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
+        }
+      }
+
+      if (ln_filters.containsKey('1root')) {
+        Set<String> oneroot_filter = ln_filters['1root'];
+
+        for (String dict_word in oneroot_filter) {
+          if (dict_word.length > 4) {
+            if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
+          } else {
+            if (detected_word == dict_word) return MatchStatus.MATCHED;
+          }
+        }
       }
     }
+
     return MatchStatus.UNMATCHED;
   }
 
@@ -40,8 +48,8 @@ class Utils {
     return ls.convert(text).toSet();
   }
 
-  // When done with debugging, preprocess the vocabs once and don't call this at
-  // runtime
+// When done with debugging, preprocess the vocabs once and don't call this at
+// runtime
   Set<String> preprocessVocab(Set vocab) {
     Set<String> preprocessed = new Set<String>();
     vocab.forEach((v) => preprocessed
@@ -53,8 +61,8 @@ class Utils {
   loadDict() async {
     globals.non_vegan_1root_de =
         preprocessVocab(await loadAsset("nonvegan_veg_food_de.txt"));
-    globals.non_vegan_keyroots_de = preprocessVocab(
-        await loadAsset("nonvegan_veg_food_keyroots_de.txt"));
+    globals.non_vegan_keyroots_de =
+        preprocessVocab(await loadAsset("nonvegan_veg_food_keyroots_de.txt"));
     globals.non_veg_1root_de =
         preprocessVocab(await loadAsset("nonvegetarian_food_de.txt"));
     globals.non_veg_keyroots_de =
@@ -64,23 +72,30 @@ class Utils {
     globals.non_veg_en = await loadAsset("nonvegetarian_food_en.txt");
   }
 
-  isVegan(String detected_word, List<String>lang){
-    if (textMatch(detected_word, lang,
-        [{"de": {"1root":globals.non_vegan_1root_de,
-          "keyroot":globals.non_vegan_keyroots_de}},
-          {"en": globals.non_vegan_en}]) ==
-        MatchStatus.MATCHED || isVegetarian(detected_word, lang)){
+  isVegan(String detected_word, List<String> lang) {
+    if (textMatch(detected_word, lang, {
+              "de": {
+                "1root": globals.non_vegan_1root_de,
+                "keyroot": globals.non_vegan_keyroots_de
+              },
+              "en": {"1root": globals.non_vegan_en}
+            }) ==
+            MatchStatus.MATCHED ||
+        isVegetarian(detected_word, lang)) {
       return true;
     } else {
       return false;
     }
   }
 
-  isVegetarian(String detected_word, List<String>lang){
-    if (textMatch(detected_word, lang,
-        [{"de": {"1root":globals.non_veg_1root_de,
-          "keyroot":globals.non_veg_keyroots_de}},
-        {"en": globals.non_veg_en}]) ==
+  isVegetarian(String detected_word, List<String> lang) {
+    if (textMatch(detected_word, lang, {
+          "de": {
+            "1root": globals.non_veg_1root_de,
+            "keyroot": globals.non_veg_keyroots_de
+          },
+          "en": {"1root": globals.non_veg_en}
+        }) ==
         MatchStatus.MATCHED) {
       return true;
     } else {
