@@ -18,27 +18,29 @@ class Utils {
         .replaceAll(RegExp('[íîīìï]'), 'i');
 
     for (String ln in langs) {
-      Map ln_filters = filters[ln];
-      if (ln_filters.containsKey('keyroot')) {
-        Set<String> keyroot_filter = ln_filters['keyroot'];
-        for (String dict_word in keyroot_filter) {
-          if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
-        }
-      }
-
-      if (ln_filters.containsKey('1root')) {
-        Set<String> oneroot_filter = ln_filters['1root'];
-
-        for (String dict_word in oneroot_filter) {
-          if (dict_word.length > 4) {
+      print(ln);
+      if (filters.containsKey(ln)) {
+        Map ln_filters = filters[ln];
+        if (ln_filters.containsKey('keyroot')) {
+          Set<String> keyroot_filter = ln_filters['keyroot'];
+          for (String dict_word in keyroot_filter) {
             if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
-          } else {
-            if (detected_word == dict_word) return MatchStatus.MATCHED;
+          }
+        }
+
+        if (ln_filters.containsKey('1root')) {
+          Set<String> oneroot_filter = ln_filters['1root'];
+
+          for (String dict_word in oneroot_filter) {
+            if (dict_word.length > 4) {
+              if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
+            } else {
+              if (detected_word == dict_word) return MatchStatus.MATCHED;
+            }
           }
         }
       }
     }
-
     return MatchStatus.UNMATCHED;
   }
 
@@ -59,27 +61,31 @@ class Utils {
   }
 
   loadDict() async {
-    globals.non_vegan_1root_de =
+    Set<String> non_vegan_1root_de =
         preprocessVocab(await loadAsset("nonvegan_veg_food_de.txt"));
-    globals.non_vegan_keyroots_de =
+    Set<String> non_vegan_keyroots_de =
         preprocessVocab(await loadAsset("nonvegan_veg_food_keyroots_de.txt"));
-    globals.non_veg_1root_de =
+    Set<String> non_veg_1root_de =
         preprocessVocab(await loadAsset("nonvegetarian_food_de.txt"));
-    globals.non_veg_keyroots_de =
+    Set<String> non_veg_keyroots_de =
         preprocessVocab(await loadAsset("nonvegetarian_food_keyroots_de.txt"));
 
-    globals.non_vegan_en = await loadAsset("nonvegan_veg_food_en.txt");
-    globals.non_veg_en = await loadAsset("nonvegetarian_food_en.txt");
+    Set<String> non_vegan_en = await loadAsset("nonvegan_veg_food_en.txt");
+    Set<String> non_veg_en = await loadAsset("nonvegetarian_food_en.txt");
+
+    globals.vegan_veg_filters = {
+      "de": {"1root": non_vegan_1root_de, "keyroot": non_vegan_keyroots_de},
+      "en": {"1root": non_vegan_en}
+    };
+
+    globals.veg_filters = {
+      "de": {"1root": non_veg_1root_de, "keyroot": non_veg_keyroots_de},
+      "en": {"1root": non_veg_en}
+    };
   }
 
   isVegan(String detected_word, List<String> lang) {
-    if (textMatch(detected_word, lang, {
-              "de": {
-                "1root": globals.non_vegan_1root_de,
-                "keyroot": globals.non_vegan_keyroots_de
-              },
-              "en": {"1root": globals.non_vegan_en}
-            }) ==
+    if (textMatch(detected_word, lang, globals.vegan_veg_filters) ==
             MatchStatus.MATCHED ||
         isVegetarian(detected_word, lang)) {
       return true;
@@ -89,13 +95,7 @@ class Utils {
   }
 
   isVegetarian(String detected_word, List<String> lang) {
-    if (textMatch(detected_word, lang, {
-          "de": {
-            "1root": globals.non_veg_1root_de,
-            "keyroot": globals.non_veg_keyroots_de
-          },
-          "en": {"1root": globals.non_veg_en}
-        }) ==
+    if (textMatch(detected_word, lang, globals.veg_filters) ==
         MatchStatus.MATCHED) {
       return true;
     } else {
