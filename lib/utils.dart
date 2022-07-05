@@ -5,8 +5,8 @@ import 'globals.dart' as globals;
 enum MatchStatus { MATCHED, UNMATCHED, NOT_SURE }
 
 class Utils {
-  MatchStatus textMatch(String detected_word, List<String> langs, Map filters) {
-    detected_word = detected_word
+  String postprocessText(String wordbox) {
+    return wordbox
         .toLowerCase()
         .replaceAll(RegExp('[^a-zäöü]'), '')
         .replaceAll(RegExp('[üûūùú]'), 'u')
@@ -16,27 +16,42 @@ class Utils {
         .replaceAll(RegExp('[ç]'), 'c')
         .replaceAll(RegExp('[öôòóõō]'), 'o')
         .replaceAll(RegExp('[íîīìï]'), 'i');
+  }
+
+  // When done with testing, preprocess the vocabs once and don't call this at
+  // runtime for battery saving
+  Set<String> preprocessVocab(Set vocab) {
+    Set<String> preprocessed = new Set<String>();
+    vocab.forEach((v) => preprocessed.add(postprocessText(v)));
+
+    return preprocessed;
+  }
+
+  MatchStatus textMatch(String detected_word, List<String> langs, Map filters) {
+    detected_word = postprocessText(detected_word);
+
+    // If we have no filters for one of the detected languages, use all the filters we have
+    // because, e.g., after a french word 'crème' is preprocessed, it can become english
+    if (!(filters.keys.toSet().containsAll(langs.toSet()))) {
+      langs = filters.keys.toList().cast<String>();
+    }
 
     for (String ln in langs) {
-      print(ln);
-      if (filters.containsKey(ln)) {
-        Map ln_filters = filters[ln];
-        if (ln_filters.containsKey('keyroot')) {
-          Set<String> keyroot_filter = ln_filters['keyroot'];
-          for (String dict_word in keyroot_filter) {
-            if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
-          }
+      // Keyroot search goes first
+      if (filters[ln].containsKey('keyroot')) {
+        for (String dict_word in filters[ln]['keyroot']) {
+          if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
         }
-
-        if (ln_filters.containsKey('1root')) {
-          Set<String> oneroot_filter = ln_filters['1root'];
-
-          for (String dict_word in oneroot_filter) {
-            if (dict_word.length > 4) {
-              if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
-            } else {
-              if (detected_word == dict_word) return MatchStatus.MATCHED;
-            }
+      }
+      // If keyroots were not detected, search of other filter words are contained in the parsed string
+      if (filters[ln].containsKey('1root')) {
+        for (String dict_word in filters[ln]['1root']) {
+          // If a dictionary word's length is > 4, search for substring matching
+          if (dict_word.length > 4) {
+            if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
+          } else {
+            // For the short words (ei, egg), search for the exact match
+            if (detected_word == dict_word) return MatchStatus.MATCHED;
           }
         }
       }
@@ -50,16 +65,6 @@ class Utils {
     return ls.convert(text).toSet();
   }
 
-// When done with debugging, preprocess the vocabs once and don't call this at
-// runtime
-  Set<String> preprocessVocab(Set vocab) {
-    Set<String> preprocessed = new Set<String>();
-    vocab.forEach((v) => preprocessed
-        .add(v.replaceAll('ä', 'a').replaceAll('ö', 'o').replaceAll('ü', 'u')));
-
-    return preprocessed;
-  }
-
   loadDict() async {
     Set<String> non_vegan_1root_de =
         preprocessVocab(await loadAsset("nonvegan_veg_food_de.txt"));
@@ -70,17 +75,22 @@ class Utils {
     Set<String> non_veg_keyroots_de =
         preprocessVocab(await loadAsset("nonvegetarian_food_keyroots_de.txt"));
 
-    Set<String> non_vegan_en = await loadAsset("nonvegan_veg_food_en.txt");
-    Set<String> non_veg_en = await loadAsset("nonvegetarian_food_en.txt");
+    Set<String> non_vegan_1root_en =
+        await loadAsset("nonvegan_veg_food_en.txt");
+    Set<String> non_veg_1root_en = await loadAsset("nonvegetarian_food_en.txt");
+    Set<String> non_vegan_keyroots_en =
+        await loadAsset("nonvegan_veg_food_keyroots_en.txt");
+    Set<String> non_veg_keyroots_en =
+        await loadAsset("nonvegetarian_food_keyroots_en.txt");
 
     globals.vegan_veg_filters = {
       "de": {"1root": non_vegan_1root_de, "keyroot": non_vegan_keyroots_de},
-      "en": {"1root": non_vegan_en}
+      "en": {"1root": non_vegan_1root_en, "keyroot": non_vegan_keyroots_en}
     };
 
     globals.veg_filters = {
       "de": {"1root": non_veg_1root_de, "keyroot": non_veg_keyroots_de},
-      "en": {"1root": non_veg_en}
+      "en": {"1root": non_veg_1root_en, "keyroot": non_veg_keyroots_en}
     };
   }
 

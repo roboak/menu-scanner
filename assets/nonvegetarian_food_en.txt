@@ -22,10 +22,12 @@ bruehwurst
 buffalo
 bushmeat
 calamari
-calf liver
+calf
+liver
 calfskin
 caribou
 carp
+cat
 catfish
 catgut
 cattle
@@ -93,7 +95,7 @@ mutton
 neck
 octopus
 opossum
-organs
+organ
 ostrich
 ox bile
 oyster
