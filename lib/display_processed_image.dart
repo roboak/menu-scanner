@@ -142,23 +142,29 @@ class TextDetectorPainter extends CustomPainter {
       for (TextLine line in block.lines) {
         // paint.color = Colors.green;
         // canvas.drawRect(line.rect, paint);
+        bool drawGreen = true;
         for (TextElement element in line.elements) {
           paint.color = Colors.red;
-
           // Filter check based on user preferences.
           print("printing filter: $filter");
           Utils utils = Utils();
           if (filter.contains("Vegan")) {
-            if (utils.isVegan(element.text, line.recognizedLanguages)){
-              // canvas.drawRect(element.rect, paint);
-              canvas.drawRect(line.rect, paint);
+            if (utils.notVegan(element.text, line.recognizedLanguages)){
+              // canvas.drawRect(line.rect, paint);
+              drawGreen = false;
+              break; // No need to check the other ingredients
             }
           } else if (filter.contains("Vegetarian")) {
-            if (utils.isVegetarian(element.text, line.recognizedLanguages)){
-              // canvas.drawRect(element.rect, paint);
-              canvas.drawRect(line.rect, paint);
+            if (utils.notVegetarian(element.text, line.recognizedLanguages)){
+              // canvas.drawRect(line.rect, paint);
+              drawGreen = false;
+              break; // No need to check the other ingredients
             }
           }
+        }
+        if (drawGreen){
+          paint.color = Colors.green;
+          canvas.drawRect(line.rect, paint);
         }
       }
     }
