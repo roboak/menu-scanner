@@ -2,12 +2,10 @@ library menu_scanner.globals;
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-Set<String> non_vegan_1root_de = {};
-Set<String> non_vegan_keyroots_de = {};
-Set<String> non_veg_1root_de = {};
-Set<String> non_veg_keyroots_de = {};
-Set<String> non_veg_en = {};
-Set<String> non_vegan_en = {};
+Map veg_filters = {};
+Map vegan_veg_filters = {};
+Set vegan_whitelist_keyroots = {};
+Set veg_whitelist_keyroots = {};
 
 final Future<SharedPreferences> perferenceInstance =
     SharedPreferences.getInstance();

@@ -61,3 +61,7 @@ gelatine
 kasein
 isinglass
 omelet
+bechamelsause
+tiramisu
+spiegelei
+margherita

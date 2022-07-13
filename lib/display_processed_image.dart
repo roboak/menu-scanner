@@ -137,42 +137,26 @@ class TextDetectorPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
     for (TextBlock block in recognisedText.blocks) {
+      // paint.color = Colors.blue;
+      // canvas.drawRect(block.rect, paint);
       for (TextLine line in block.lines) {
+        // paint.color = Colors.green;
+        // canvas.drawRect(line.rect, paint);
         for (TextElement element in line.elements) {
           paint.color = Colors.red;
-          // final textSpan = TextSpan(
-          //   text: element.text,
-          //   style: textStyle,
-          // );
-          // final textPainter = TextPainter(
-          //   text: textSpan,
-          //   textDirection: TextDirection.ltr,
-          // );
-          // textPainter.layout(
-          //   minWidth: 0,
-          //   maxWidth: size.width,
-          // );
-          // textPainter.paint(canvas, element.rect.topLeft);
-
-          //If non-veg filter selected and if the recognised text is present in the non-veg dictionary, highlight the words.
 
           // Filter check based on user preferences.
           print("printing filter: $filter");
           Utils utils = Utils();
           if (filter.contains("Vegan")) {
-            if ((utils.textMatch(element.text, globals.non_vegan_1root_de,
-                        globals.non_vegan_keyroots_de) ==
-                    MatchStatus.MATCHED) ||
-                (utils.textMatch(element.text, globals.non_veg_1root_de,
-                        globals.non_veg_keyroots_de) ==
-                    MatchStatus.MATCHED)) {
-              canvas.drawRect(element.rect, paint);
+            if (utils.isVegan(element.text, line.recognizedLanguages)){
+              // canvas.drawRect(element.rect, paint);
+              canvas.drawRect(line.rect, paint);
             }
           } else if (filter.contains("Vegetarian")) {
-            if (utils.textMatch(element.text, globals.non_veg_1root_de,
-                    globals.non_veg_keyroots_de) ==
-                MatchStatus.MATCHED) {
-              canvas.drawRect(element.rect, paint);
+            if (utils.isVegetarian(element.text, line.recognizedLanguages)){
+              // canvas.drawRect(element.rect, paint);
+              canvas.drawRect(line.rect, paint);
             }
           }
         }

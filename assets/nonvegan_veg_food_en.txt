@@ -3,7 +3,6 @@ beeswax
 butter
 buttermilk
 cheese
-chymotrypsin
 cream
 curds
 custard
