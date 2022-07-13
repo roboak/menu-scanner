@@ -232,3 +232,6 @@ breast
 chest
 wing
 seafood
+hamburger
+cheeseburger
+chickenburger

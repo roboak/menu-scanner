@@ -137,7 +137,11 @@ class TextDetectorPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
     for (TextBlock block in recognisedText.blocks) {
+      // paint.color = Colors.blue;
+      // canvas.drawRect(block.rect, paint);
       for (TextLine line in block.lines) {
+        // paint.color = Colors.green;
+        // canvas.drawRect(line.rect, paint);
         for (TextElement element in line.elements) {
           paint.color = Colors.red;
 
@@ -146,11 +150,13 @@ class TextDetectorPainter extends CustomPainter {
           Utils utils = Utils();
           if (filter.contains("Vegan")) {
             if (utils.isVegan(element.text, line.recognizedLanguages)){
-              canvas.drawRect(element.rect, paint);
+              // canvas.drawRect(element.rect, paint);
+              canvas.drawRect(line.rect, paint);
             }
           } else if (filter.contains("Vegetarian")) {
             if (utils.isVegetarian(element.text, line.recognizedLanguages)){
-              canvas.drawRect(element.rect, paint);
+              // canvas.drawRect(element.rect, paint);
+              canvas.drawRect(line.rect, paint);
             }
           }
         }

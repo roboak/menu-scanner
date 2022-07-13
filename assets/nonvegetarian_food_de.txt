@@ -5,8 +5,6 @@ angora
 sülze
 astrachan
 speck
-grill
-grillen
 bass
 bär
 bison
@@ -59,7 +57,6 @@ heilbutt
 schinken
 ausblenden
 pferd
-backe
 känguru
 katsuobushi
 okay
@@ -127,7 +124,6 @@ forelle
 truthahn
 schildkröte
 wild
-peperoni
 pastete
 bruststück
 rippen
@@ -262,3 +258,4 @@ fischöl
 haifischleberöl
 meeresschildkrötenöl
 schnitzel
+scampi
