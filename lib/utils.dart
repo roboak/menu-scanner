@@ -109,18 +109,18 @@ class Utils {
     globals.veg_whitelist_keyroots = veg_whitelist_keyroots;
   }
 
-  isVegan(String detected_word, List<String> lang) {
+  notVegan(String detected_word, List<String> lang) {
     if (textMatch(detected_word, globals.vegan_veg_filters,
                 globals.vegan_whitelist_keyroots) ==
             MatchStatus.MATCHED ||
-        isVegetarian(detected_word, lang)) {
+        notVegetarian(detected_word, lang)) {
       return true;
     } else {
       return false;
     }
   }
 
-  isVegetarian(String detected_word, List<String> lang) {
+  notVegetarian(String detected_word, List<String> lang) {
     if (textMatch(
             detected_word,
             globals.veg_filters,

@@ -149,12 +149,12 @@ class TextDetectorPainter extends CustomPainter {
           print("printing filter: $filter");
           Utils utils = Utils();
           if (filter.contains("Vegan")) {
-            if (utils.isVegan(element.text, line.recognizedLanguages)){
+            if (utils.notVegan(element.text, line.recognizedLanguages)){
               // canvas.drawRect(element.rect, paint);
               canvas.drawRect(line.rect, paint);
             }
           } else if (filter.contains("Vegetarian")) {
-            if (utils.isVegetarian(element.text, line.recognizedLanguages)){
+            if (utils.notVegetarian(element.text, line.recognizedLanguages)){
               // canvas.drawRect(element.rect, paint);
               canvas.drawRect(line.rect, paint);
             }
