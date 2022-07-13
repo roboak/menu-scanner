@@ -27,35 +27,28 @@ class Utils {
     return preprocessed;
   }
 
-  MatchStatus textMatch(String detected_word, List<String> langs, Map filters) {
+  MatchStatus textMatch(String detected_word, Map filters) {
     detected_word = postprocessText(detected_word);
-
-    // If we have no filters for one of the detected languages, use all the filters we have
-    // because, e.g., after a french word 'crème' is preprocessed, it can become english
-    if (!(filters.keys.toSet().containsAll(langs.toSet()))) {
-      langs = filters.keys.toList().cast<String>();
+    // Keyroot search goes first
+    for (String dict_word in filters['de']['keyroot']) {
+      if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
     }
-
-    for (String ln in langs) {
-      // Keyroot search goes first
-      if (filters[ln].containsKey('keyroot')) {
-        for (String dict_word in filters[ln]['keyroot']) {
-          if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
-        }
-      }
-      // If keyroots were not detected, search of other filter words are contained in the parsed string
-      if (filters[ln].containsKey('1root')) {
-        for (String dict_word in filters[ln]['1root']) {
-          // If a dictionary word's length is > 4, search for substring matching
-          if (dict_word.length > 4) {
-            if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
-          } else {
-            // For the short words (ei, egg), search for the exact match
-            if (detected_word == dict_word) return MatchStatus.MATCHED;
-          }
-        }
+    // If keyroots were not detected, search of other filter words are contained in the parsed string
+    for (String dict_word in filters['de']['1root']) {
+      // If a dictionary word's length is > 4, search for substring matching
+      if (dict_word.length > 4) {
+        if (detected_word.contains(dict_word)) return MatchStatus.MATCHED;
+      } else {
+        // For the short words (ei, egg), search for the exact match
+        if (detected_word == dict_word) return MatchStatus.MATCHED;
       }
     }
+
+    // For the English words search for the exact match
+    for (String dict_word in filters['en']['1root']) {
+      if (detected_word == dict_word) return MatchStatus.MATCHED;
+    }
+
     return MatchStatus.UNMATCHED;
   }
 
@@ -95,7 +88,7 @@ class Utils {
   }
 
   isVegan(String detected_word, List<String> lang) {
-    if (textMatch(detected_word, lang, globals.vegan_veg_filters) ==
+    if (textMatch(detected_word, globals.vegan_veg_filters) ==
             MatchStatus.MATCHED ||
         isVegetarian(detected_word, lang)) {
       return true;
@@ -105,7 +98,7 @@ class Utils {
   }
 
   isVegetarian(String detected_word, List<String> lang) {
-    if (textMatch(detected_word, lang, globals.veg_filters) ==
+    if (textMatch(detected_word, globals.veg_filters) ==
         MatchStatus.MATCHED) {
       return true;
     } else {
