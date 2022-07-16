@@ -134,8 +134,9 @@ class TextDetectorPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) async {
     canvas.drawImage(image, Offset.zero, Paint());
     final Paint paint = Paint()
-      ..style = PaintingStyle.stroke
+      ..style = PaintingStyle.fill
       ..strokeWidth = 2.0;
+
     for (TextBlock block in recognisedText.blocks) {
       // paint.color = Colors.blue;
       // canvas.drawRect(block.rect, paint);
@@ -143,18 +144,33 @@ class TextDetectorPainter extends CustomPainter {
         // paint.color = Colors.green;
         // canvas.drawRect(line.rect, paint);
         for (TextElement element in line.elements) {
-          paint.color = Colors.red;
+          paint.color = Color.fromARGB(255, 233, 125, 117).withOpacity(0.5);
+          // final textSpan = TextSpan(
+          //   text: element.text,
+          //   style: textStyle,
+          // );
+          // final textPainter = TextPainter(
+          //   text: textSpan,
+          //   textDirection: TextDirection.ltr,
+          // );
+          // textPainter.layout(
+          //   minWidth: 0,
+          //   maxWidth: size.width,
+          // );
+          // textPainter.paint(canvas, element.rect.topLeft);
+
+          //If non-veg filter selected and if the recognised text is present in the non-veg dictionary, highlight the words.
 
           // Filter check based on user preferences.
           print("printing filter: $filter");
           Utils utils = Utils();
           if (filter.contains("Vegan")) {
-            if (utils.notVegan(element.text, line.recognizedLanguages)){
+            if (utils.notVegan(element.text, line.recognizedLanguages)) {
               // canvas.drawRect(element.rect, paint);
               canvas.drawRect(line.rect, paint);
             }
           } else if (filter.contains("Vegetarian")) {
-            if (utils.notVegetarian(element.text, line.recognizedLanguages)){
+            if (utils.notVegetarian(element.text, line.recognizedLanguages)) {
               // canvas.drawRect(element.rect, paint);
               canvas.drawRect(line.rect, paint);
             }
