@@ -168,11 +168,13 @@ class TextDetectorPainter extends CustomPainter {
             if (utils.notVegan(element.text, line.recognizedLanguages)) {
               // canvas.drawRect(element.rect, paint);
               canvas.drawRect(line.rect, paint);
+              break;
             }
           } else if (filter.contains("Vegetarian")) {
             if (utils.notVegetarian(element.text, line.recognizedLanguages)) {
               // canvas.drawRect(element.rect, paint);
               canvas.drawRect(line.rect, paint);
+              break;
             }
           }
         }
